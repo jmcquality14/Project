@@ -170,6 +170,7 @@ function update(elaspedTime){
 			player2 = new Player((3*WIDTH)/4, HEIGHT/2, 0);
 			bullets = [];
 			asteroids = [];
+			level = 1;
 			gameOverFlag = false;
 			clearLevelFlag = true;
 		}
