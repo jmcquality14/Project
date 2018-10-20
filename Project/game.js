@@ -155,18 +155,18 @@ function update(elaspedTime){
 		if( asteroids.length < numOfAsteroids){
 			for(var i = 0; i < numOfAsteroids; i++){ addAsteroid();}
 		}
-	} else {
+	} else { //&& !player1.currentInput.up
 		if(player1.currentInput.up){ player1.update(elaspedTime, 0, 0.2);}	
-		if(player1.currentInput.left && !player1.currentInput.up){ player1.update(elaspedTime, -0.1, 0);}
-		if(player1.currentInput.right && !player1.currentInput.up){ player1.update(elaspedTime, 0.1, 0);}
+		if(player1.currentInput.left ){ player1.update(elaspedTime, -0.1, 0);}
+		if(player1.currentInput.right ){ player1.update(elaspedTime, 0.1, 0);}
 		if(player1.currentInput.space && !player1.priorInput.space && !player1.dead) {
 			bullets.push(new Bullet(player1.x, player1.y, 2, 0.5, player1.angle, player1));
 			laser.play();
 		}	
-		
+		//&& !player2.currentInput.up
 		if(player2.currentInput.up){ player2.update(elaspedTime, 0, 0.2);}	
-		if(player2.currentInput.left && !player2.currentInput.up){ player2.update(elaspedTime, -0.1, 0);}
-		if(player2.currentInput.right && !player2.currentInput.up){ player2.update(elaspedTime, 0.1, 0);}
+		if(player2.currentInput.left ){ player2.update(elaspedTime, -0.1, 0);}
+		if(player2.currentInput.right ){ player2.update(elaspedTime, 0.1, 0);}
 		if(player2.currentInput.space && !player2.priorInput.space && !player2.dead) {
 			bullets.push(new Bullet(player2.x, player2.y, 2, 0.5, player2.angle, player2));
 			laser.play();
