@@ -4,7 +4,7 @@
   * @param {integer} x - x-coordinate of player
   * @param {integer} y - y-coordinate of player
   */
-function Player(x, y, angle){//src
+function Player(x, y, angle){
 	this.dead = false;
 	this.lives = 3;
 	this.score = 0;
@@ -27,9 +27,8 @@ function Player(x, y, angle){//src
 		left: false,
 		right: false,
 	}	
-	//this.img = document.createElement('CSSImageValue');
-	//this.img.src = src;
-	this.img = document.getElementById('spaceship');
+	this.playerImage = new Image();
+	this.playerImage.src = "spaceship.png";
 }
 
 /** @function 
@@ -74,6 +73,6 @@ Player.prototype.render = function(context){
 	context.save();
 	context.translate(this.x, this.y);
 	context.rotate(this.angle);
-	context.drawImage(this.img, -(this.width / 2), -(this.height / 2), this.width ,this.height);
+	context.drawImage(this.playerImage, -(this.width / 2), -(this.height / 2), this.width ,this.height);
 	context.restore();
 }

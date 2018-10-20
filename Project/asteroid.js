@@ -17,7 +17,8 @@ function Asteroid(x, y, radius, velocity, angle, mass){
 	this.angle = angle;
 	this.x_vector = velocity*Math.sin(angle); 
 	this.y_vector = velocity*Math.cos(angle);
-	this.img = document.getElementById('asteroid');
+	this.asteroidImage = new Image();
+	this.asteroidImage.src = "asteroid.png";
 }
 
 /** @function update
@@ -39,12 +40,12 @@ Asteroid.prototype.update = function(deltaT){
   * @param {canvas} context - canvas being drawn to 
   */
 Asteroid.prototype.render = function(context){
-	context.save();
 	//context.beginPath();
 	//context.fillStyle = 'red'
 	//context.arc(this.x, this.y, this.radius, 0, 2*Math.PI);
 	//context.fill();
-	context.drawImage(this.img, this.x-this.radius, this.y-this.radius, 2*this.radius, 2*this.radius);
 	//context.closePath();  
+	context.save();
+	context.drawImage(this.asteroidImage, this.x-this.radius, this.y-this.radius, 2*this.radius, 2*this.radius);
 	context.restore();
 }

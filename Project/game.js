@@ -17,15 +17,19 @@ backBuffer.width = WIDTH;
 
 //Global Variables//
 var start = null;
-var clearLevelFlag = true;
+var menuFlag = true;
+var clearLevelFlag = false;
 var gameOverFlag = false;
 var level = 1;
 
 //Sprites//
 var bullets = [];
 var asteroids = [];
-var player1 = new Player( WIDTH/4, HEIGHT/2, Math.PI, "spaceship.png"); 
-var player2 = new Player((3*WIDTH)/4, HEIGHT/2, 0, "spaceship.png");
+var player1 = new Player( WIDTH/4, HEIGHT/2, Math.PI); 
+var player2 = new Player((3*WIDTH)/4, HEIGHT/2, 0);
+
+//Images//
+var menuScreen = new GameScreen('background.png', WIDTH, HEIGHT);
 
 //Sounds//
 var laser = new Sound("Laser_Shoot.wav");
@@ -122,6 +126,22 @@ function copyInput() {
 	player2.priorInput = JSON.parse(JSON.stringify(player2.currentInput));
 }
 
+function gameStateMachine(gameState) {
+	switch(gameState){
+		case 0:
+			console.log("in state machine");
+			menuScreen.render(backBufferCtx);
+			screenCtx.drawImage(backBuffer, WIDTH, HEIGHT);
+			break;
+		case 1:
+			console.log("test loop");
+			break;
+		case 2:
+			console.log("test Gameover");
+			break;
+	}	
+}
+
 /** @function loop
   * The main game loop
   * @param {DomHighResTimestamp} timestamp - the current system time
@@ -129,8 +149,6 @@ function copyInput() {
 function loop(timestamp){	
 	if(!start) {
 		start = timestamp;		
-		player1.render(backBufferCtx);
-		player2.render(backBufferCtx);
 	}
 	var elaspedTime = timestamp - start;
 	start = timestamp;
@@ -147,7 +165,19 @@ function loop(timestamp){
   */
 function update(elaspedTime){
 	if(gameOverFlag) {
-		return;
+		if(player1.currentInput.space || player2.currentInput.space) {
+			player1 = new Player( WIDTH/4, HEIGHT/2, Math.PI); 
+			player2 = new Player((3*WIDTH)/4, HEIGHT/2, 0);
+			bullets = [];
+			asteroids = [];
+			gameOverFlag = false;
+			clearLevelFlag = true;
+		}
+	} else if (menuFlag) {
+		if(player1.currentInput.space || player2.currentInput.space) {
+			menuFlag = false;
+			clearLevelFlag = true;
+		}
 	} else if(clearLevelFlag) {
 		if(!player1.dead) { player1.x = WIDTH/4; player1.y=HEIGHT/2; };
 		if(!player2.dead) { player2.x = (3*WIDTH)/4; player2.y=HEIGHT/2; };
@@ -198,22 +228,28 @@ function render(Ctx){
 		} else {
 			Ctx.fillText('GAME OVER!  TIED SCORE: '+ player2.score, WIDTH/2 - 120, HEIGHT/2);
 		}
+	} else if (menuFlag) {
+		menuScreen.render(Ctx);
+		Ctx.fillText('Press Space to Start', WIDTH/2-40, HEIGHT/2);
+		Ctx.fillStyle = 'white';
 	} else if(clearLevelFlag){
 		Ctx.fillText("Level "+level, WIDTH/2, HEIGHT/2);
 		Ctx.fillStyle = 'white';
 		setTimeout(function(){ clearLevelFlag = false;}, 3000);		
 	} else {
-		Ctx.fillText("Player1's Score: "+ player1.score + "        Player1's Lives: "+ player1.lives +"                Player2's Score: "+ player2.score + "        Player2's Lives: "+ player2.lives, 20 , 50);	
-		Ctx.fillStyle = 'white';
-		Ctx.closePath();
+		menuScreen.render(Ctx);
 		if(!player1.dead){	player1.render(Ctx);}
 		if(!player2.dead){	player2.render(Ctx);}
 		bullets.forEach(function(bullet){ bullet.render(Ctx);});
 		asteroids.forEach(function(asteroid){ asteroid.render(Ctx);});
+		Ctx.fillText("Player 1's Score: "+ player1.score + "        Player 1's Lives: "+ player1.lives +"                Player 2's Score: "+ player2.score + "        Player 2's Lives: "+ player2.lives, 20 , 50);	
+		Ctx.fillStyle = 'white';
+		Ctx.closePath();
 		if(asteroids.length == 0){ 
 			level++;
 			clearLevelFlag = true;
 		}
+		
 	}
 }
 
@@ -232,7 +268,6 @@ function addAsteroid(){
 	var mass = Math.floor(Math.random() * 100);
 	asteroids.push(new Asteroid(x_pos, y_pos, radius, velocity, angle, mass));
 }
-
 
 /** @function detectCollision
   * Detects a collision between a player's bullet and an asteroid. Removes bullet and asteroid from
