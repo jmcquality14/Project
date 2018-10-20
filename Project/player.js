@@ -4,13 +4,13 @@
   * @param {integer} x - x-coordinate of player
   * @param {integer} y - y-coordinate of player
   */
-function Player(x, y){
+function Player(x, y, angle){
 	this.x = x;
 	this.y = y;
-	this.lives = 3;
+	this.angle = angle;
 	this.dead = false;
+	this.lives = 3;
 	this.score = 0;
-	this.angle = 0;
 	this.width = 32;
 	this.length = 32;	
 	this.currentInput = {

@@ -24,8 +24,8 @@ var level = 1;
 //Sprites//
 var bullets = [];
 var asteroids = [];
-var player1 = new Player( WIDTH/4, HEIGHT/2); 
-var player2 = new Player((3*WIDTH)/4, HEIGHT/2);
+var player1 = new Player( WIDTH/4, HEIGHT/2, Math.PI); 
+var player2 = new Player((3*WIDTH)/4, HEIGHT/2, 0);
 
 //Sounds//
 var laser = new Sound("Laser_Shoot.wav");
@@ -146,30 +146,26 @@ function loop(timestamp){
   * @param {double} elapsedTime - the amount of time elapsed between frames
   */
 function update(elaspedTime){
-	if(!gameOverFlag) {
-		if(player1.currentInput.up){
-			player1.update(elaspedTime, 0, 0.2);
-		}	
-		if(player1.currentInput.left && !player1.currentInput.up){
-			player1.update(elaspedTime, -0.1, 0);
+	if(gameOverFlag) {
+		return;
+	} else if(clearLevelFlag) {
+		var numOfAsteroids = level + 4;
+		for(var i = 0; i < numOfAsteroids; i++){
+			addAsteroid();
 		}
-		if(player1.currentInput.right && !player1.currentInput.up){
-			player1.update(elaspedTime, 0.1, 0);
-		}
+		clearLevelFlag = false;	
+	} else {
+		if(player1.currentInput.up){ player1.update(elaspedTime, 0, 0.2);}	
+		if(player1.currentInput.left && !player1.currentInput.up){ player1.update(elaspedTime, -0.1, 0);}
+		if(player1.currentInput.right && !player1.currentInput.up){ player1.update(elaspedTime, 0.1, 0);}
 		if(player1.currentInput.space && !player1.priorInput.space && !player1.dead) {
 			bullets.push(new Bullet(player1.x, player1.y, 2, 0.5, player1.angle, player1));
 			laser.play();
 		}	
 		
-		if(player2.currentInput.up){
-			player2.update(elaspedTime, 0, 0.2);
-		}	
-		if(player2.currentInput.left && !player2.currentInput.up){
-			player2.update(elaspedTime, -0.1, 0);
-		}
-		if(player2.currentInput.right && !player2.currentInput.up){
-			player2.update(elaspedTime, 0.1, 0);
-		}
+		if(player2.currentInput.up){ player2.update(elaspedTime, 0, 0.2);}	
+		if(player2.currentInput.left && !player2.currentInput.up){ player2.update(elaspedTime, -0.1, 0);}
+		if(player2.currentInput.right && !player2.currentInput.up){ player2.update(elaspedTime, 0.1, 0);}
 		if(player2.currentInput.space && !player2.priorInput.space && !player2.dead) {
 			bullets.push(new Bullet(player2.x, player2.y, 2, 0.5, player2.angle, player2));
 			laser.play();
@@ -183,8 +179,8 @@ function update(elaspedTime){
 			if(bullet.y < 0 || bullet.y > HEIGHT || bullet.x < 0 || bullet.x > WIDTH){ bullets.splice(index, 1);}
 		});
 		
-		if(!player1.dead){detectPlayerCollision(player1);}
-		if(!player2.dead){detectPlayerCollision(player2);}
+		if(!player1.dead){detectPlayerCollision(player1);detectBulletPlayerCollision(player1);}
+		if(!player2.dead){detectPlayerCollision(player2);detectBulletPlayerCollision(player2);}
 		detectAsteroidCollision()
 		detectBulletCollision();
 	}
@@ -195,15 +191,11 @@ function update(elaspedTime){
   * @param {} Ctx - context that render is drawing to.
   */
 function render(Ctx){
+	Ctx.beginPath();
 	Ctx.clearRect(0, 0, WIDTH, HEIGHT);	
-	Ctx.moveTo(0,0);
-	Ctx.font = '32 px Ariel white'
-	Ctx.fillText("Player1's Score: "+ player1.score + "        Player1's Lives: "+ player1.lives +"                Player2's Score: "+ player2.score + "        Player2's Lives: "+ player2.lives, 20 , 50);	
-	Ctx.closePath();
-	if(player1.lives <= 0 && player2.lives <= 0){
+	Ctx.font = 'white';
+	if( (player1.lives <= 0 && player2.lives <= 0) || gameOverFlag ){
 		gameOverFlag = true;
-		Ctx.fillStyle = 'white';
-		Ctx.font = '20 px Ariel white';
 		if(player1.score > player2.score){
 			Ctx.fillText('GAME OVER!  PLAYER1 WINS!  FINAL SCORE:  ' + player1.score, WIDTH/2 - 145, HEIGHT/2); 
 		} else if (player2.score > player1.score){
@@ -211,14 +203,11 @@ function render(Ctx){
 		} else {
 			Ctx.fillText('GAME OVER!  TIED SCORE: '+ player2.score, WIDTH/2 - 120, HEIGHT/2);
 		}
+	} else if(clearLevelFlag){
+		Ctx.fillText("Level "+level-1+" Completed! Starting Level "+level, 20 , 50);	
 	} else {
-		if(clearLevelFlag){
-			var numOfAsteroids = level + 4;
-			for(var i = 0; i < numOfAsteroids; i++){
-				addAsteroid();
-			}
-			clearLevelFlag = false;		
-		}	
+		Ctx.fillText("Player1's Score: "+ player1.score + "        Player1's Lives: "+ player1.lives +"                Player2's Score: "+ player2.score + "        Player2's Lives: "+ player2.lives, 20 , 50);	
+		Ctx.closePath();
 		if(!player1.dead){	player1.render(Ctx);}
 		if(!player2.dead){	player2.render(Ctx);}
 		bullets.forEach(function(bullet){ bullet.render(Ctx);});
@@ -272,10 +261,6 @@ function detectBulletCollision(){
 	}
 }
 
-
-
-
-
 /** @function detectAsteroidCollision
   * Detects a collision between two asteroids. Asteroids deflect off of one another.
   */
@@ -327,22 +312,24 @@ function detectPlayerCollision(player){
 	}
 }
 
-function detectPlayerCollision(player){
-	for(var i = 0; i < asteroids.length; i++){
-		var rx = asteroids[i].x.clamp(player.x, player.x + player.width);
-		var ry = asteroids[i].y.clamp(player.y, player.y + player.length);
-		var distSquared = Math.pow(rx - asteroids[i].x, 2) + Math.pow(ry - asteroids[i].y, 2); 
-		if(distSquared <= Math.pow(asteroids[i].radius, 2)){
-			console.log('Collision!');
-			asteroids.splice(i, 1);
-			player.lives -= 1;	
-			player.dead = true;
-			if(player.lives > 0){
-				setTimeout(function(){	player.dead = false;}, 2000);
-			}
-			collision.play();
-			i=0;			
-		} 
+function detectBulletPlayerCollision(player){
+	for(var i = 0; i < bullets.length; i++){
+		if(bullets[i].owner != player){
+			var rx = bullets[i].x.clamp(player.x, player.x + player.width);
+			var ry = bullets[i].y.clamp(player.y, player.y + player.length);
+			var distSquared = Math.pow(rx - bullets[i].x, 2) + Math.pow(ry - bullets[i].y, 2); 
+			if(distSquared <= Math.pow(bullets[i].radius, 2)){
+				console.log('Collision!');
+				bullets.splice(i, 1);
+				player.lives -= 1;	
+				player.dead = true;
+				if(player.lives > 0){
+					setTimeout(function(){	player.dead = false;}, 2000);
+				}
+				collision.play();
+				i=0;			
+			} 
+		}
 	}
 }
 
@@ -355,7 +342,6 @@ function detectPlayerCollision(player){
 Number.prototype.clamp = function(min, max) {	
   return Math.min(Math.max(this, min), max);
 };
-
 
 //Sound Class//
 function Sound(src){

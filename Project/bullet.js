@@ -8,8 +8,8 @@
   * @param {float} angle - the angle of trajectory
   */
 function Bullet(x, y,radius, velocity, angle, owner){
-	this.x = x-5;
-	this.y = y+5;
+	this.x = x;
+	this.y = y+1;
 	this.owner = owner;
 	this.radius = radius;
 	this.velocity = velocity;
