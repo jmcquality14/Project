@@ -24,8 +24,8 @@ var level = 1;
 //Sprites//
 var bullets = [];
 var asteroids = [];
-var player1 = new Player( WIDTH/4, HEIGHT/2, Math.PI); 
-var player2 = new Player((3*WIDTH)/4, HEIGHT/2, 0);
+var player1 = new Player( WIDTH/4, HEIGHT/2, Math.PI, "spaceship.png"); 
+var player2 = new Player((3*WIDTH)/4, HEIGHT/2, 0, "spaceship.png");
 
 //Sounds//
 var laser = new Sound("Laser_Shoot.wav");
@@ -155,23 +155,19 @@ function update(elaspedTime){
 		if( asteroids.length < numOfAsteroids){
 			for(var i = 0; i < numOfAsteroids; i++){ addAsteroid();}
 		}
-	} else { //&& !player1.currentInput.up
-		if(player1.currentInput.up){ player1.update(elaspedTime, 0, 0.2);}	
-		if(player1.currentInput.left ){ player1.update(elaspedTime, -0.1, 0);}
-		if(player1.currentInput.right ){ player1.update(elaspedTime, 0.1, 0);}
+	} else { 
+		if(player1.currentInput.left){ player1.update(elaspedTime, -0.05, 0);} else if(player1.currentInput.right){ player1.update(elaspedTime, 0.05, 0);}
+		if(player1.currentInput.up && !(player1.currentInput.left || player1.currentInput.right) ){ player1.update(elaspedTime, 0, 0.2);} else { player1.update(elaspedTime, 0 , 0); }
 		if(player1.currentInput.space && !player1.priorInput.space && !player1.dead) {
 			bullets.push(new Bullet(player1.x, player1.y, 2, 0.5, player1.angle, player1));
 			laser.play();
 		}	
-		//&& !player2.currentInput.up
-		if(player2.currentInput.up){ player2.update(elaspedTime, 0, 0.2);}	
-		if(player2.currentInput.left ){ player2.update(elaspedTime, -0.1, 0);}
-		if(player2.currentInput.right ){ player2.update(elaspedTime, 0.1, 0);}
+		if(player2.currentInput.left ){ player2.update(elaspedTime, -0.05, 0);} else if(player2.currentInput.right ){ player2.update(elaspedTime, 0.05, 0);}
+		if(player2.currentInput.up && !(player2.currentInput.left || player2.currentInput.right)){ player2.update(elaspedTime, 0, 0.2);} else { player2.update( elaspedTime, 0, 0); } 	
 		if(player2.currentInput.space && !player2.priorInput.space && !player2.dead) {
 			bullets.push(new Bullet(player2.x, player2.y, 2, 0.5, player2.angle, player2));
 			laser.play();
 		}
-		
 		asteroids.forEach(function(asteroid,index){
 			asteroid.update(elaspedTime);
 		});
@@ -179,7 +175,6 @@ function update(elaspedTime){
 			bullet.update(elaspedTime);
 			if(bullet.y < 0 || bullet.y > HEIGHT || bullet.x < 0 || bullet.x > WIDTH){ bullets.splice(index, 1);}
 		});
-		
 		if(!player1.dead){detectPlayerCollision(player1);detectBulletPlayerCollision(player1);}
 		if(!player2.dead){detectPlayerCollision(player2);detectBulletPlayerCollision(player2);}
 		detectAsteroidCollision()

@@ -4,13 +4,15 @@
   * @param {integer} x - x-coordinate of player
   * @param {integer} y - y-coordinate of player
   */
-function Player(x, y, angle){
-	this.x = x;
-	this.y = y;
-	this.angle = angle;
+function Player(x, y, angle){//src
 	this.dead = false;
 	this.lives = 3;
 	this.score = 0;
+	this.x = x;
+	this.y = y;
+	this.angle = angle; // angle ship is pointing
+	this.momentumAngle = angle; // angle ship is traveling
+	this.speed = 0;
 	this.width = 32;
 	this.height = 32;	
 	this.currentInput = {
@@ -25,6 +27,8 @@ function Player(x, y, angle){
 		left: false,
 		right: false,
 	}	
+	//this.img = document.createElement('CSSImageValue');
+	//this.img.src = src;
 	this.img = document.getElementById('spaceship');
 }
 
@@ -34,11 +38,24 @@ function Player(x, y, angle){
   * @param {double} deltaT - the total change in the anlge
   * @param {double} deltaV - the total change in veloity
   */
-Player.prototype.update= function(deltaT, deltaTheta, deltaV){
+Player.prototype.update= function(deltaT, deltaTheta, velocity){
 	
-	this.angle += deltaTheta;
-	var x_vector = deltaV*Math.cos(this.angle);
-	var y_vector = deltaV*Math.sin(this.angle);
+	if(velocity != 0 && (this.angle == this.momentumAngle)) {
+		this.speed = velocity;
+	} else {
+		this.speed *= 0.98;
+	}	
+	
+	if(this.speed <= 0.02 && this.speed >= -0.02){
+		this.speed = 0;
+		this.angle += deltaTheta;
+		this.momentumAngle = this.angle;
+	} else {
+		this.angle += deltaTheta;
+	}
+	
+	var x_vector = this.speed*Math.cos(this.momentumAngle);
+	var y_vector = this.speed*Math.sin(this.momentumAngle);
 	
 	this.x += deltaT*x_vector;
 	this.y += deltaT*y_vector;
