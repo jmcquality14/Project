@@ -12,7 +12,7 @@ function Player(x, y, angle){
 	this.lives = 3;
 	this.score = 0;
 	this.width = 32;
-	this.length = 32;	
+	this.height = 32;	
 	this.currentInput = {
 		space: false,
 		up: false,
@@ -43,10 +43,10 @@ Player.prototype.update= function(deltaT, deltaTheta, deltaV){
 	this.x += deltaT*x_vector;
 	this.y += deltaT*y_vector;
 	
-	if(this.y < -40){ this.y = HEIGHT; }
-	if(this.y > HEIGHT+40){ this.y = 0; }
-	if(this.x < -40){ this.x = WIDTH; }
-	if(this.x > WIDTH+40){ this.x = 0; }
+	if(this.y < -this.height/2){ this.y = HEIGHT; }
+	if(this.y > HEIGHT+(this.height/2)){ this.y = 0; }
+	if(this.x < -this.width/2){ this.x = WIDTH; }
+	if(this.x > WIDTH+(this.width/2)){ this.x = 0; }
 }
 
 /** @function render
@@ -57,8 +57,6 @@ Player.prototype.render = function(context){
 	context.save();
 	context.translate(this.x, this.y);
 	context.rotate(this.angle);
-	//context.fillStyle = 'white';
-	//context.fillRect(-(this.width / 2), -(this.length / 2), this.width ,this.length);
-	context.drawImage(this.img, -(this.width / 2), -(this.length / 2), this.width ,this.length);
+	context.drawImage(this.img, -(this.width / 2), -(this.height / 2), this.width ,this.height);
 	context.restore();
 }

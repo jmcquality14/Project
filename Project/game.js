@@ -149,11 +149,12 @@ function update(elaspedTime){
 	if(gameOverFlag) {
 		return;
 	} else if(clearLevelFlag) {
+		if(!player1.dead) { player1.x = WIDTH/4; player1.y=HEIGHT/2; };
+		if(!player2.dead) { player2.x = (3*WIDTH)/4; player2.y=HEIGHT/2; };
 		var numOfAsteroids = level + 4;
-		for(var i = 0; i < numOfAsteroids; i++){
-			addAsteroid();
+		if( asteroids.length < numOfAsteroids){
+			for(var i = 0; i < numOfAsteroids; i++){ addAsteroid();}
 		}
-		clearLevelFlag = false;	
 	} else {
 		if(player1.currentInput.up){ player1.update(elaspedTime, 0, 0.2);}	
 		if(player1.currentInput.left && !player1.currentInput.up){ player1.update(elaspedTime, -0.1, 0);}
@@ -193,7 +194,6 @@ function update(elaspedTime){
 function render(Ctx){
 	Ctx.beginPath();
 	Ctx.clearRect(0, 0, WIDTH, HEIGHT);	
-	Ctx.font = 'white';
 	if( (player1.lives <= 0 && player2.lives <= 0) || gameOverFlag ){
 		gameOverFlag = true;
 		if(player1.score > player2.score){
@@ -204,9 +204,12 @@ function render(Ctx){
 			Ctx.fillText('GAME OVER!  TIED SCORE: '+ player2.score, WIDTH/2 - 120, HEIGHT/2);
 		}
 	} else if(clearLevelFlag){
-		Ctx.fillText("Level "+level-1+" Completed! Starting Level "+level, 20 , 50);	
+		Ctx.fillText("Level "+level, WIDTH/2, HEIGHT/2);
+		Ctx.fillStyle = 'white';
+		setTimeout(function(){ clearLevelFlag = false;}, 3000);		
 	} else {
 		Ctx.fillText("Player1's Score: "+ player1.score + "        Player1's Lives: "+ player1.lives +"                Player2's Score: "+ player2.score + "        Player2's Lives: "+ player2.lives, 20 , 50);	
+		Ctx.fillStyle = 'white';
 		Ctx.closePath();
 		if(!player1.dead){	player1.render(Ctx);}
 		if(!player2.dead){	player2.render(Ctx);}
@@ -296,7 +299,7 @@ function detectAsteroidCollision(){
 function detectPlayerCollision(player){
 	for(var i = 0; i < asteroids.length; i++){
 		var rx = asteroids[i].x.clamp(player.x, player.x + player.width);
-		var ry = asteroids[i].y.clamp(player.y, player.y + player.length);
+		var ry = asteroids[i].y.clamp(player.y, player.y + player.height);
 		var distSquared = Math.pow(rx - asteroids[i].x, 2) + Math.pow(ry - asteroids[i].y, 2); 
 		if(distSquared <= Math.pow(asteroids[i].radius, 2)){
 			console.log('Collision!');
@@ -316,7 +319,7 @@ function detectBulletPlayerCollision(player){
 	for(var i = 0; i < bullets.length; i++){
 		if(bullets[i].owner != player){
 			var rx = bullets[i].x.clamp(player.x, player.x + player.width);
-			var ry = bullets[i].y.clamp(player.y, player.y + player.length);
+			var ry = bullets[i].y.clamp(player.y, player.y + player.height);
 			var distSquared = Math.pow(rx - bullets[i].x, 2) + Math.pow(ry - bullets[i].y, 2); 
 			if(distSquared <= Math.pow(bullets[i].radius, 2)){
 				console.log('Collision!');
