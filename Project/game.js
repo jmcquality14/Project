@@ -32,8 +32,9 @@ var boss;
 var player1 = new Player( WIDTH/4, HEIGHT/2, Math.PI); 
 var player2 = new Player((3*WIDTH)/4, HEIGHT/2, 0);
 
-//Images//
-var menuScreen = new GameScreen('background.png', WIDTH, HEIGHT);
+//Screens//
+var menuScreen = new GameScreen('logo.png', WIDTH, HEIGHT);
+var backgroundScreeen = new GameScreen('background.png', WIDTH, HEIGHT);
 
 //Sounds//
 var song = new Sound("upbeat-song.wav");
@@ -41,7 +42,6 @@ var bossSong = new Sound("boss_Song.wav");
 var laser = new Sound("Laser_Shoot.wav");
 var collision = new Sound("Hit_Hurt.wav");
 var death = new Sound("Game_Over.wav");
-//var explosion = new Sound("Explosion.wav");
 
 function player1handleKeydown(event) {
 	switch(event.key){
@@ -237,7 +237,7 @@ function render(Ctx){
 	} else if (menuFlag) {
 		menuScreen.render(Ctx);
 		Ctx.font="25px Georgia";
-		Ctx.fillText('Press Space to Start', WIDTH/2-110, HEIGHT/2);
+		Ctx.fillText('Press Space to Start', WIDTH/2-75, (3*HEIGHT)/4);
 		Ctx.fillStyle = 'white';
 	} else if(clearLevelFlag){
 		Ctx.font="25px Georgia";
@@ -245,7 +245,7 @@ function render(Ctx){
 		Ctx.fillStyle = 'white';
 		setTimeout(function(){ clearLevelFlag = false;}, 3000);		
 	} else {
-		menuScreen.render(Ctx);
+		backgroundScreeen.render(Ctx);
 		if(!player1.dead){	player1.render(Ctx);}
 		if(!player2.dead){	player2.render(Ctx);}
 		bullets.forEach(function(bullet){ bullet.render(Ctx);});		
