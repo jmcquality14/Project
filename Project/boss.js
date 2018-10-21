@@ -13,8 +13,10 @@ function Boss(x, y, health){
 Boss.prototype.update = function(deltaT){
 	if( this.x <= this.width/2 + 25 )
 		this.speed *= -1;
+		this.x += 5;
 	else if ( this.x >= WIDTH - this.width - this.width/2) {
 		this.speed *= -1;
+		this.x -= 5;
 	}
 	this.x += deltaT * this.speed;
 }
