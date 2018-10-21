@@ -1,13 +1,5 @@
 //Bullet Class//
-/** @function Bullet
-  * Constructor to the Bullet Object 
-  * @param {integer} x - x-coordinate of bullet
-  * @param {integer} y - y-coordinate of bullet
-  * @param {integer} radius - radius of the bullet
-  * @param {float} velocity - the velocity of bullet
-  * @param {float} angle - the angle of trajectory
-  */
-function Bullet(x, y,radius, velocity, angle, owner){
+function Bullet(x, y, radius, velocity, angle, owner){
 	this.x = x;
 	this.y = y+1;
 	this.owner = owner;
@@ -16,10 +8,6 @@ function Bullet(x, y,radius, velocity, angle, owner){
 	this.angle = angle;
 }
 
-/** @function update
-  * Updates position of Bullet on canvas
-  * @param {double} deltaT - the total change in time 
-  */
 Bullet.prototype.update = function(deltaT) {
 	var x_vector = this.velocity*Math.cos(this.angle);
 	var y_vector = this.velocity*Math.sin(this.angle);
@@ -27,10 +15,6 @@ Bullet.prototype.update = function(deltaT) {
 	this.y += deltaT * y_vector;
 }
 
-/** @function render
-  * Draws bullet on canvas
-  * @param {canvas} context - canvas being drawn to
-  */
 Bullet.prototype.render = function(context){
 	context.beginPath();
 	context.fillStyle = 'white'
