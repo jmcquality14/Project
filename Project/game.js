@@ -29,8 +29,8 @@ var bullets = [];
 var asteroids = [];
 var bossBullets = [];
 var boss;
-var player1 = new Player( WIDTH/4, HEIGHT/2, Math.PI); 
-var player2 = new Player((3*WIDTH)/4, HEIGHT/2, 0);
+var player1 = new Player('spaceship.png', WIDTH/4, HEIGHT/2, Math.PI); 
+var player2 = new Player('spaceship2.png', (3*WIDTH)/4, HEIGHT/2, 0);
 
 //Screens//
 var menuScreen = new GameScreen('logo.png', WIDTH, HEIGHT);
@@ -39,6 +39,7 @@ var backgroundScreeen = new GameScreen('background.png', WIDTH, HEIGHT);
 //Sounds//
 var song = new Sound("upbeat-song.wav");
 var bossSong = new Sound("boss_Song.wav");
+var spookySong = new Sound("Spooky-Song.wav");
 var laser = new Sound("Laser_Shoot.wav");
 var collision = new Sound("Hit_Hurt.wav");
 var death = new Sound("Game_Over.wav");
@@ -147,16 +148,18 @@ function update(elaspedTime){
 			clearLevelFlag = true;
 		}
 	} else if (menuFlag) {
+		song.play();
 		if(player1.currentInput.space || player2.currentInput.space) {
 			menuFlag = false;
 			clearLevelFlag = true;
+			song.pause();
 		}
 	} else if(clearLevelFlag) {
 		player1.x = WIDTH/4; player1.y=HEIGHT/2;
 		player2.x = (3*WIDTH)/4; player2.y=HEIGHT/2;
 		bullets = [];
 		if ( (level % 3) == 0 ) {
-			song.pause();
+			spookySong.pause();
 			bossSong.play();
 			boss = new Boss( WIDTH/2, (1*HEIGHT)/4, 100);
 			bossFight = true;
@@ -168,7 +171,7 @@ function update(elaspedTime){
 				for(var i = 0; i < numOfAsteroids; i++){ addAsteroid();}
 			}
 			bossSong.pause();
-			song.play();
+			spookySong.play();
 		}
 	} else { 
 		if(player1.currentInput.left){ player1.update(elaspedTime, -0.1, 0);} else if(player1.currentInput.right){ player1.update(elaspedTime, 0.1, 0);}
@@ -402,4 +405,5 @@ function Sound(src){
     this.pause = function(){ this.sound.pause();}
 }
 
+//Starts Game//
 window.requestAnimationFrame(loop);

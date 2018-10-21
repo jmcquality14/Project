@@ -1,5 +1,5 @@
 //Player Class//
-function Player(x, y, angle){
+function Player(src, x, y, angle){
 	this.dead = false;
 	this.lives = 100;
 	this.score = 0;
@@ -23,7 +23,7 @@ function Player(x, y, angle){
 		right: false,
 	}	
 	this.playerImage = new Image();
-	this.playerImage.src = "spaceship.png";
+	this.playerImage.src = src;
 }
 
 Player.prototype.update= function(deltaT, deltaTheta, velocity){
