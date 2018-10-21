@@ -48,8 +48,10 @@ Player.prototype.update= function(deltaT, deltaTheta, velocity){
 	this.x += deltaT*x_vector;
 	this.y += deltaT*y_vector;
 	
-	if(this.y < -this.height/2){ this.y = HEIGHT; }
-	if(this.y > HEIGHT+(this.height/2)){ this.y = 0; }
+	if(bossFight && this.y < (2*HEIGHT/5)) { this.y = HEIGHT; }
+	else if(this.y < 0-this.height/2){ this.y = HEIGHT; }
+	if(bossFight && this.y > HEIGHT) { this.y = (2*HEIGHT)/5; }
+	else if(this.y > HEIGHT+(this.height/2)){ this.y = 0; }
 	if(this.x < -this.width/2){ this.x = WIDTH; }
 	if(this.x > WIDTH+(this.width/2)){ this.x = 0; }
 }
